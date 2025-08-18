@@ -96,3 +96,15 @@ button {
     align-items: center;
     justify-content: center;
 }
+
+/* Evita que el gesto táctil se trate como scroll o zoom dentro del plano */
+#plane, .point-wrap {
+  touch-action: none;
+}
+
+/* Evita selección/drag de texto/elementos al arrastrar */
+.point-wrap, .point, .point-label {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}

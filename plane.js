@@ -42,35 +42,55 @@ function createPoint(name) {
 function makeDraggable(el, name) {
     let offsetX = 0, offsetY = 0, dragging = false;
 
-    el.addEventListener("mousedown", (e) => {
-        const rect = plane.getBoundingClientRect();
-        // offset relativo al wrapper (no al target) para que funcione al hacer click en label o círculo
-        offsetX = e.clientX - rect.left - el.offsetLeft;
-        offsetY = e.clientY - rect.top - el.offsetTop;
-        dragging = true;
-    });
+    // 📍 Normaliza coordenadas de mouse o touch
+    function getClientXY(e) {
+        if (e.touches && e.touches.length > 0) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+    }
 
-    window.addEventListener("mousemove", (e) => {
-        if (!dragging) return;
+    function startDrag(e) {
+        const { x, y } = getClientXY(e);
         const rect = plane.getBoundingClientRect();
-        let x = e.clientX - rect.left - offsetX;
-        let y = e.clientY - rect.top - offsetY;
+        offsetX = x - rect.left - el.offsetLeft;
+        offsetY = y - rect.top - el.offsetTop;
+        dragging = true;
+        e.preventDefault(); // evita scroll en móviles
+    }
+
+    function doDrag(e) {
+        if (!dragging) return;
+        const { x, y } = getClientXY(e);
+        const rect = plane.getBoundingClientRect();
+        let newX = x - rect.left - offsetX;
+        let newY = y - rect.top - offsetY;
 
         // Limitar dentro del plano considerando el tamaño del punto
-        x = Math.max(0, Math.min(rect.width - pointSize, x));
-        y = Math.max(0, Math.min(rect.height - pointSize, y));
+        newX = Math.max(0, Math.min(rect.width - pointSize, newX));
+        newY = Math.max(0, Math.min(rect.height - pointSize, newY));
 
         // Snap al centro de la celda
-        x = Math.round(x / gridSize) * gridSize + (gridSize - pointSize) / 2;
-        y = Math.round(y / gridSize) * gridSize + (gridSize - pointSize) / 2;
+        newX = Math.round(newX / gridSize) * gridSize + (gridSize - pointSize) / 2;
+        newY = Math.round(newY / gridSize) * gridSize + (gridSize - pointSize) / 2;
 
-        el.style.left = x + "px";
-        el.style.top = y + "px";
-    });
+        el.style.left = newX + "px";
+        el.style.top = newY + "px";
+    }
 
-    window.addEventListener("mouseup", () => {
+    function endDrag() {
         dragging = false;
-    });
+    }
+
+    // 🖱️ Eventos de ratón
+    el.addEventListener("mousedown", startDrag);
+    window.addEventListener("mousemove", doDrag);
+    window.addEventListener("mouseup", endDrag);
+
+    // 📱 Eventos táctiles
+    el.addEventListener("touchstart", startDrag, { passive: false });
+    window.addEventListener("touchmove", doDrag, { passive: false });
+    window.addEventListener("touchend", endDrag);
 }
 
 /**

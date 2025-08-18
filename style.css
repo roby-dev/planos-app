@@ -9,32 +9,61 @@ body {
     flex: 1;
     max-width: 300px;
 }
+
 #plane {
-  position: relative;
-  width: 750px;
-  height: 750px;
-  border: 2px solid #333;
-  background: 
-    linear-gradient(to right, #ddd 1px, transparent 1px),
-    linear-gradient(to bottom, #ddd 1px, transparent 1px);
-  background-size: 50px 50px; /* 🔹 Celda más grande */
+    position: relative;
+    width: 750px;
+    height: 750px;
+    border: 2px solid #333;
+    background:
+        linear-gradient(to right, #ddd 1px, transparent 1px),
+        linear-gradient(to bottom, #ddd 1px, transparent 1px);
+    background-size: 50px 50px;
+    /* 🔹 Celda más grande */
 }
 
+/* Contenedor del punto (se arrastra este) */
+.point-wrap {
+    position: absolute;
+    width: 30px;
+    /* debe coincidir con pointSize */
+    height: 30px;
+    /* debe coincidir con pointSize */
+    cursor: grab;
+}
+
+.point-wrap:active {
+    cursor: grabbing;
+}
+
+/* Círculo rojo */
 .point {
-  width: 30px;   /* 🔹 Más pequeño que la celda */
-  height: 30px;
-  border-radius: 50%;
-  background: crimson;
-  position: absolute;
-  cursor: grab;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 11px;
-  user-select: none;
-  border: 2px solid white;
-  transition: left 0.3s, top 0.3s;
+    position: absolute;
+    inset: 0;
+    /* top/right/bottom/left = 0 */
+    border-radius: 50%;
+    background: crimson;
+    border: 2px solid white;
+}
+
+/* Nombre arriba del punto */
+.point-label {
+    position: absolute;
+    bottom: 100%;
+    /* arriba del círculo */
+    left: 50%;
+    transform: translate(-50%, -1px);
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    /* no partir en varias líneas */
+    pointer-events: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 4px;
+    /* no estorba al drag */
 }
 
 .point:active {
@@ -61,7 +90,7 @@ button {
     display: block;
 }
 
-#plane-container{
+#plane-container {
     display: flex;
     flex-direction: column;
     align-items: center;

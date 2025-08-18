@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Planos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="controls">
+        <label>
+            Nombre:
+            <input type="text" id="pointName" placeholder="Ej: Bailarín 1">
+        </label>
+        <button id="addPoint">Agregar Punto</button>
+        <br>
+        <button id="savePosition">Guardar Posición</button>
+
+        <h3>Posiciones Guardadas</h3>
+        <ul id="positionsList"></ul>
+    </div>
+
+    <div id="plane-container">
+        <div>
+            --- Escenario ----
+        </div>
+        <br />
+        <div id="plane">
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="storage.js"></script>
+    <script src="plane.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

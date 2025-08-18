@@ -1,0 +1,69 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+#controls {
+    flex: 1;
+    max-width: 300px;
+}
+#plane {
+  position: relative;
+  width: 750px;
+  height: 750px;
+  border: 2px solid #333;
+  background: 
+    linear-gradient(to right, #ddd 1px, transparent 1px),
+    linear-gradient(to bottom, #ddd 1px, transparent 1px);
+  background-size: 50px 50px; /* 🔹 Celda más grande */
+}
+
+.point {
+  width: 30px;   /* 🔹 Más pequeño que la celda */
+  height: 30px;
+  border-radius: 50%;
+  background: crimson;
+  position: absolute;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 11px;
+  user-select: none;
+  border: 2px solid white;
+  transition: left 0.3s, top 0.3s;
+}
+
+.point:active {
+    cursor: grabbing;
+}
+
+ul {
+    padding-left: 20px;
+}
+
+ul li {
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+ul li:hover {
+    text-decoration: underline;
+    color: blue;
+}
+
+input,
+button {
+    margin-top: 5px;
+    display: block;
+}
+
+#plane-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

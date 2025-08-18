@@ -40,59 +40,59 @@ function createPoint(name) {
  * Hacer arrastrable el WRAPPER y ajustar al centro de la celda
  */
 function makeDraggable(el, name) {
-    let offsetX = 0, offsetY = 0, dragging = false;
+  let startOffsetX = 0, startOffsetY = 0;
+  let dragging = false;
+  let pid = null; // pointerId
 
-    // 📍 Normaliza coordenadas de mouse o touch
-    function getClientXY(e) {
-        if (e.touches && e.touches.length > 0) {
-            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        }
-        return { x: e.clientX, y: e.clientY };
+  function snap(v, size, pointSize) {
+    return Math.round(v / size) * size + (size - pointSize) / 2;
+  }
+
+  el.addEventListener('pointerdown', (e) => {
+    const rect = plane.getBoundingClientRect();
+    pid = e.pointerId;
+    // Captura el puntero para seguir recibiendo eventos aunque el dedo salga del elemento
+    el.setPointerCapture(pid);
+
+    startOffsetX = e.clientX - rect.left - el.offsetLeft;
+    startOffsetY = e.clientY - rect.top  - el.offsetTop;
+    dragging = true;
+
+    // Evita que el navegador piense que quieres hacer scroll
+    e.preventDefault();
+  });
+
+  el.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const rect = plane.getBoundingClientRect();
+
+    let x = e.clientX - rect.left - startOffsetX;
+    let y = e.clientY - rect.top  - startOffsetY;
+
+    // Limitar dentro del plano considerando el tamaño del punto
+    x = Math.max(0, Math.min(rect.width  - pointSize, x));
+    y = Math.max(0, Math.min(rect.height - pointSize, y));
+
+    // Snap al centro de la celda
+    x = snap(x, gridSize, pointSize);
+    y = snap(y, gridSize, pointSize);
+
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+  });
+
+  function endDrag(e) {
+    dragging = false;
+    if (pid !== null) {
+      try { el.releasePointerCapture(pid); } catch(_) {}
+      pid = null;
     }
+  }
 
-    function startDrag(e) {
-        const { x, y } = getClientXY(e);
-        const rect = plane.getBoundingClientRect();
-        offsetX = x - rect.left - el.offsetLeft;
-        offsetY = y - rect.top - el.offsetTop;
-        dragging = true;
-        e.preventDefault(); // evita scroll en móviles
-    }
-
-    function doDrag(e) {
-        if (!dragging) return;
-        const { x, y } = getClientXY(e);
-        const rect = plane.getBoundingClientRect();
-        let newX = x - rect.left - offsetX;
-        let newY = y - rect.top - offsetY;
-
-        // Limitar dentro del plano considerando el tamaño del punto
-        newX = Math.max(0, Math.min(rect.width - pointSize, newX));
-        newY = Math.max(0, Math.min(rect.height - pointSize, newY));
-
-        // Snap al centro de la celda
-        newX = Math.round(newX / gridSize) * gridSize + (gridSize - pointSize) / 2;
-        newY = Math.round(newY / gridSize) * gridSize + (gridSize - pointSize) / 2;
-
-        el.style.left = newX + "px";
-        el.style.top = newY + "px";
-    }
-
-    function endDrag() {
-        dragging = false;
-    }
-
-    // 🖱️ Eventos de ratón
-    el.addEventListener("mousedown", startDrag);
-    window.addEventListener("mousemove", doDrag);
-    window.addEventListener("mouseup", endDrag);
-
-    // 📱 Eventos táctiles
-    el.addEventListener("touchstart", startDrag, { passive: false });
-    window.addEventListener("touchmove", doDrag, { passive: false });
-    window.addEventListener("touchend", endDrag);
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointercancel', endDrag);
+  el.addEventListener('lostpointercapture', endDrag);
 }
-
 /**
  * Obtener posiciones actuales
  */

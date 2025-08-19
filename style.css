@@ -44,6 +44,7 @@ body {
     border-radius: 50%;
     background: crimson;
     border: 2px solid white;
+  transition: left 0.3s, top 0.3s;
 }
 
 /* Nombre arriba del punto */

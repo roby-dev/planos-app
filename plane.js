@@ -33,6 +33,7 @@ function createPoint(name) {
 
     makeDraggable(wrap, name);
     points.push({ element: wrap, name });
+    renderPointsList();
     return wrap;
 }
 
@@ -40,58 +41,67 @@ function createPoint(name) {
  * Hacer arrastrable el WRAPPER y ajustar al centro de la celda
  */
 function makeDraggable(el, name) {
-  let startOffsetX = 0, startOffsetY = 0;
-  let dragging = false;
-  let pid = null; // pointerId
+    let startOffsetX = 0, startOffsetY = 0;
+    let dragging = false;
+    let pid = null; // pointerId
 
-  function snap(v, size, pointSize) {
-    return Math.round(v / size) * size + (size - pointSize) / 2;
-  }
-
-  el.addEventListener('pointerdown', (e) => {
-    const rect = plane.getBoundingClientRect();
-    pid = e.pointerId;
-    // Captura el puntero para seguir recibiendo eventos aunque el dedo salga del elemento
-    el.setPointerCapture(pid);
-
-    startOffsetX = e.clientX - rect.left - el.offsetLeft;
-    startOffsetY = e.clientY - rect.top  - el.offsetTop;
-    dragging = true;
-
-    // Evita que el navegador piense que quieres hacer scroll
-    e.preventDefault();
-  });
-
-  el.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    const rect = plane.getBoundingClientRect();
-
-    let x = e.clientX - rect.left - startOffsetX;
-    let y = e.clientY - rect.top  - startOffsetY;
-
-    // Limitar dentro del plano considerando el tamaño del punto
-    x = Math.max(0, Math.min(rect.width  - pointSize, x));
-    y = Math.max(0, Math.min(rect.height - pointSize, y));
-
-    // Snap al centro de la celda
-    x = snap(x, gridSize, pointSize);
-    y = snap(y, gridSize, pointSize);
-
-    el.style.left = x + 'px';
-    el.style.top  = y + 'px';
-  });
-
-  function endDrag(e) {
-    dragging = false;
-    if (pid !== null) {
-      try { el.releasePointerCapture(pid); } catch(_) {}
-      pid = null;
+    function snap(v, size, pointSize) {
+        return Math.round(v / size) * size + (size - pointSize) / 2;
     }
-  }
 
-  el.addEventListener('pointerup', endDrag);
-  el.addEventListener('pointercancel', endDrag);
-  el.addEventListener('lostpointercapture', endDrag);
+    el.addEventListener('pointerdown', (e) => {
+        const rect = plane.getBoundingClientRect();
+        pid = e.pointerId;
+        // Captura el puntero para seguir recibiendo eventos aunque el dedo salga del elemento
+        el.setPointerCapture(pid);
+
+        startOffsetX = e.clientX - rect.left - el.offsetLeft;
+        startOffsetY = e.clientY - rect.top - el.offsetTop;
+        dragging = true;
+
+        // Evita que el navegador piense que quieres hacer scroll
+        e.preventDefault();
+    });
+
+    el.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const rect = plane.getBoundingClientRect();
+
+        let x = e.clientX - rect.left - startOffsetX;
+        let y = e.clientY - rect.top - startOffsetY;
+
+        // Limitar dentro del plano considerando el tamaño del punto
+        x = Math.max(0, Math.min(rect.width - pointSize, x));
+        y = Math.max(0, Math.min(rect.height - pointSize, y));
+
+        // Snap al centro de la celda
+        x = snap(x, gridSize, pointSize);
+        y = snap(y, gridSize, pointSize);
+
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+    });
+
+    function endDrag(e) {
+        dragging = false;
+        if (pid !== null) {
+            try { el.releasePointerCapture(pid); } catch (_) { }
+            pid = null;
+        }
+    }
+
+    el.addEventListener('pointerup', endDrag);
+    el.addEventListener('pointercancel', endDrag);
+    el.addEventListener('lostpointercapture', endDrag);
+
+    el.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        if (confirm(`¿Eliminar el punto "${name}"?`)) {
+            plane.removeChild(el); // eliminar del plano
+            points = points.filter(p => p.name !== name); // quitar de array
+            renderPointsList(); // actualizar lista lateral
+        }
+    });
 }
 /**
  * Obtener posiciones actuales

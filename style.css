@@ -30,6 +30,7 @@ body {
     height: 30px;
     /* debe coincidir con pointSize */
     cursor: grab;
+    transition: left 0.3s, top 0.3s;
 }
 
 .point-wrap:active {
@@ -44,7 +45,7 @@ body {
     border-radius: 50%;
     background: crimson;
     border: 2px solid white;
-  transition: left 0.3s, top 0.3s;
+    transition: left 0.3s, top 0.3s;
 }
 
 /* Nombre arriba del punto */
@@ -76,14 +77,10 @@ ul {
 }
 
 ul li {
-    cursor: pointer;
     margin-bottom: 5px;
 }
 
-ul li:hover {
-    text-decoration: underline;
-    color: blue;
-}
+
 
 input,
 button {
@@ -99,13 +96,97 @@ button {
 }
 
 /* Evita que el gesto táctil se trate como scroll o zoom dentro del plano */
-#plane, .point-wrap {
-  touch-action: none;
+#plane,
+.point-wrap {
+    touch-action: none;
 }
 
 /* Evita selección/drag de texto/elementos al arrastrar */
-.point-wrap, .point, .point-label {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-user-drag: none;
+.point-wrap,
+.point,
+.point-label {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+#positionsList li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    gap: 5px;
+}
+
+#positionsList button {
+    font-size: 12px;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
+#points-container {
+    flex: 1;
+    max-width: 200px;
+}
+
+#pointsList li {
+    margin-bottom: 5px;
+}
+
+/* --- Estilos para el modo de edición de puntos (con efecto de inquietud) --- */
+
+/* Aplica el efecto al círculo (.point) cuando su contenedor (.point-wrap) tiene la clase .editing */
+.point-wrap.editing .point {
+    /* Mantenemos el borde amarillo brillante */
+    box-shadow: 0 0 10px #8b8b8b;
+    /* Mantenemos el resplandor */
+    animation: restless 0.5s infinite;
+    /* NUEVA animación de inquietud */
+}
+
+/* Define la animación de "inquietud" */
+@keyframes restless {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(-1px, 1px);
+    }
+
+    50% {
+        transform: translate(1px, -1px);
+    }
+
+    75% {
+        transform: translate(-1px, -1px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+/* --- Estilos para el input de edición del nombre del punto --- */
+.point-label-edit {
+    /* Reseteo de estilos de input */
+    border: 1px solid #007bff; /* Borde azul para indicar edición */
+    outline: none;
+    padding: 3px;
+    margin: 0;
+    box-sizing: border-box;
+
+    /* Igualar la fuente de la etiqueta original */
+    font-size: 12px;
+    font-weight: 600;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    color: #333;
+    
+    /* Posicionamiento exacto sobre el punto */
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translate(-50%, -1px);
+    width: 120px; /* Ancho suficiente para nombres largos */
+    z-index: 10; /* Asegura que esté por encima de otros elementos */
 }
